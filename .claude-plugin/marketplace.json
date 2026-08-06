@@ -1,0 +1,16 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "litigation-skills",
+  "description": "Marketplace for plugins from the litigation skills system.",
+  "owner": {
+    "name": "tori-vxz",
+    "url": "https://github.com/tori-vxz"
+  },
+  "plugins": [
+    {
+      "name": "web-research",
+      "description": "Multi-angle web research chain (web-crawler, web-consolidator, web) for one-off research questions or as a research step inside other skills.",
+      "source": "./web-research"
+    }
+  ]
+}

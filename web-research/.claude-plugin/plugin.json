@@ -1,0 +1,18 @@
+{
+  "name": "web-research",
+  "version": "0.1.0",
+  "description": "Three-part web research chain: web-crawler names every plausible category of explanation for a question, spawns one search per category, and keeps re-searching each until results stabilize; web-consolidator merges multiple crawler reports into one, keeping findings tied to their source and flagging disagreements; web writes the final answer, resolving conflicts by source authority and keeping a URL attached to every fact.",
+  "author": {
+    "name": "tori-vxz",
+    "url": "https://github.com/tori-vxz"
+  },
+  "homepage": "https://github.com/tori-vxz/litigation-skills",
+  "repository": "https://github.com/tori-vxz/litigation-skills",
+  "keywords": [
+    "research",
+    "web-search",
+    "legal-research",
+    "citations",
+    "subagents"
+  ]
+}
