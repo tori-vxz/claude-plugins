@@ -2,101 +2,115 @@
 name: nd-cal-cmc-stmt-builder
 description: Draft a Civil Case Management Statement (Joint Case Management Statement / "CMS" / "JCMS") for a case pending in the U.S. District Court for the Northern District of California, given a complaint and the assigned judge. Use this skill whenever the user mentions drafting, preparing, or updating a Case Management Statement, Joint Case Management Statement, or CMS/JCMS for N.D. Cal. — even if they just say "draft the CMS" or paste a complaint and a judge's name without spelling out the full document type. Also trigger if the user asks to research a specific N.D. Cal. judge's standing order or CMS requirements as a step toward preparing this filing, or if the user invokes this skill by name as "/ND Cal CMC Stmt Builder". Produces a court-formatted .docx with plaintiff-side content filled in and clearly marked placeholders for defendant's positions, ready to send to opposing counsel to complete before joint filing.
 ---
- 
+
 # ND Cal CMC Stmt Builder
- 
-Drafts a plaintiff-side Joint Case Management Statement for a case in the Northern District of
-California, populated from (1) the complaint and (2) the assigned judge's specific requirements,
-built on the district-wide baseline in the N.D. Cal. Standing Order for All Judges, Civil Local Rule 16-9.
- 
-## Scope & Outputs
 
-This skill drafts plaintiff-side CMS content only. It extracts facts from the complaint (caption, parties, jurisdiction, relief sought), crosses those with the judge's standing order to spot deviations from the district baseline, and produces a .docx file formatted to N.D. Cal. specifications with:
+Drafts a plaintiff-side Joint Case Management Statement for a case in the Northern District of California, populated from (1) the complaint and (2) the assigned judge's specific requirements.
 
-- **Completed plaintiff sections** — drawn from the complaint and the judge's standing order research
-- **Clearly marked defense-counsel placeholders** — [DEFENDANT'S POSITION: TO BE COMPLETED BY DEFENSE COUNSEL] for every joint topic that needs both sides' input
-- **Proposed class-certification and trial dates** — per the firm's Rule 26(f) Scheduling Protocol
-- **Optional calendar events** — for each accepted deadline, created on the user's calendar
+## Workflow Overview
 
-The document is ready to send to opposing counsel for completion of their portions before joint filing.
+This skill runs five steps:
 
-## Operating Instructions
+1. **Gather inputs** — Collect the complaint, judge, matter number, and Rule 16 Order (if available). Look up the Rule 26(f) conference date from the matter's calendar.
+2. **Dispatch research subagents** — Run the docket check (Step 1a) and judge requirements research (Step 2) in parallel; fall back to inline research if subagents aren't available.
+3. **Draft the statement** — Populate the 19 topics with plaintiff positions and defendant placeholders, applying district-wide baseline formatting from `references/standing_order_topics.md`.
+4. **Produce the .docx** — Build a court-formatted Word document using the `docx` npm library.
+5. **Flag limitations** — Note any missing information, judge-specific deviations, or calendar assistance outcomes.
 
-### Step 1 — Gather inputs
+## Step 1 — Gather Inputs
 
-**At the very start of every use of this skill, ask for the internal matter number and look up the Rule 26(f) conference/M&C date from the matter's calendar.** This runs before anything else in Step 1, because it feeds a date used in two places later in the draft (Topic 7's initial disclosures sentence and the Topic 15 scheduling table), and asking for it upfront avoids having to interrupt drafting partway through. The lookup:
+**Required inputs:**
+- **The complaint** (uploaded file or pasted text) — if missing, ask for it and don't proceed without it.
+- **The assigned judge's name** — unless a Rule 16 Order is provided (in which case pull the judge from that order).
+- **The case number** — use the Rule 16 Order if provided; otherwise use the complaint's stamped court filing. If neither has a stamped number, ask the user to provide it before drafting.
 
-1. Ask the user for the case's internal matter number.
-2. **Resolve the matter number to a calendar, not to an event search across everything.** Call the calendar tool's `list_calendars` and look for a calendar whose name (`summary`) starts with or contains that matter number — this firm keeps one dedicated calendar per matter, named like "3696 Sling TV" (matter number + short case name), though a few shared calendars (e.g., "Appellate Cases") pool multiple matters together and would need an event-title match instead. Try the calendar-name match first.
-   - If no calendar's name matches the matter number, tell the user plainly that you couldn't find a calendar for that matter number and ask them to double-check it and enter it again — don't fall through to a different matter's calendar or guess.
-3. **Within that matter's calendar, search for an event referencing the Rule 26(f) conference** — titles like "26F," "26F M&C," "26F Call," "26(f) Conference," or similar; match on the substring "26F" (or "26(f)") case-insensitively rather than requiring an exact label, since different timekeepers phrase this differently.
-   - **If you find one event that clearly and unambiguously references the 26(f) conference/M&C, use its date** — no need to check in with the user first when the match is this clean.
-   - **If nothing in that calendar references 26(f) at all, or you find something but aren't confident it's the right event** (multiple candidates, or a title that's ambiguous about whether it's actually the 26(f) conference), tell the user what you found (or that you found nothing) and ask directly: is [this event / a 26(f) conference] the one to use for this calculation?
-     - If yes: use that event's date.
-     - If no: ask the user to type in the actual date of the 26(f) conference directly.
-       - If they don't provide one, drop this feature for the rest of the draft — leave Topic 7 and the Topic 15 initial-disclosures row with their standard bracketed-placeholder treatment (described in each topic's own section below) rather than guessing or re-asking repeatedly.
-4. Once you have a governing 26(f) conference date (from the calendar or from the user directly), compute 14 days after it using FRCP 6(a) math (the same script used for the Topic 15 class-cert dates below). This resulting date is what gets inserted in Topic 7 and Topic 15; see those sections for exactly where.
+**Before anything else:** ask for the **internal matter number** and look up the **Rule 26(f) conference date** from the matter's calendar. Use this date to compute the initial-disclosures deadline (14 days after the 26(f) conference, FRCP-6-adjusted) for Topic 7 and the Topic 15 scheduling table. See `references/bf_26f_scheduling_protocol.md` for the full lookup procedure and fallback behavior.
 
-If this whole lookup is skipped or abandoned per the branches above, both of those spots keep their existing bracketed-placeholder behavior — don't treat the absence of a matter-number-based date as a reason to leave the rest of the draft incomplete.
+**Rule 16 Order (preferred for caption details):** If the user provides a Rule 16 Order, pull the case number, assigned judge, and the CMC hearing date/time/location directly from it. If not provided, leave the hearing date/time/location as bracketed placeholders in the caption and ask the user to either (a) provide the Rule 16 Order, (b) confirm the judge and provide those details directly, or (c) confirm you should proceed with placeholders.
 
-**A Rule 16 Order, if provided, is the preferred source for the caption's hearing details.** If the user provides the court's Order Setting Initial Case Management Conference (a "Rule 16 Order" — issued under Fed. R. Civ. P. 16 and Civil L.R. 16-2), pull the case number, the assigned judge, and the CMC hearing date, time, and location (courtroom) directly from that order rather than from the complaint or from asking the user separately — the Rule 16 Order is the authoritative source for these specific fields since the court itself sets them. Use it in preference to any conflicting information elsewhere (e.g., if the complaint predates a judge reassignment, the Rule 16 Order's judge controls).
+**From the complaint, extract:**
+- Full case caption (parties, case number), jurisdictional basis, whether it's a putative class action, causes of action, relief sought, related cases.
+- Plaintiffs' counsel signature block (firm name, attorney names, state bar numbers, address, phone, fax, email, "Attorneys for Plaintiff(s)" line) — from the complaint's first and signature pages. This is the authoritative source for every new case; don't reuse prior counsel information.
 
-**If no Rule 16 Order is provided:** pull only the case number from the stamped complaint (per the rule above), and leave the hearing date, time, and courtroom/location fields as bracketed placeholders in the caption box — do not guess or invent them. In the same response, explicitly prompt the user to (a) confirm the assigned judge if not already provided, (b) supply the Rule 16 Order so the hearing date, time, and location can be filled in, or (c) provide the date/time/location directly if the order isn't available. Don't bury this prompt — say it plainly, the same way Claude would flag any other missing required input.
+## Step 1a & Step 2 — Research in Parallel (or inline fallback)
 
-You need, at minimum:
-- **The complaint** (uploaded file, or pasted text). If it's referenced but not actually attached, say so and ask for it — don't proceed on assumptions about case facts.
-- **The assigned judge's name** — unless a Rule 16 Order is provided, in which case pull the judge from that order instead of asking separately.
+Dispatch these as two independent subagents when possible (neither depends on the other):
 
-If the complaint is missing, ask for it before drafting. Don't guess at case facts, causes of action, relief sought, or jurisdictional basis — pull these only from the complaint itself.
+**Subagent A — Step 1a: Public docket check.** Given the case number, search CourtListener, PacerMonitor, UniCourt, or Justia Dockets for: (a) whether a summons appears returned executed (with date/ECF number), (b) any related motions filed, (c) any CMC date set. Return findings or "not found" plainly; don't infer facts from absence of a search hit.
 
-**The case number: use the Rule 16 Order if one was provided; otherwise use the complaint's stamped filing.** Look for the court-stamped case number (e.g., in the caption box or in a "Case X:XX-cv-XXXXX" ECF stamp/header on the page) on whichever of these two documents takes priority per the rule above. Use that exact number verbatim in the caption box and footer — never invent, reuse, or carry over a case number from a prior conversation, a different case, or an example in this skill's own reference materials. If neither document contains a stamped case number (e.g., an unstamped drafting copy, or the case number field is blank because the complaint hasn't been filed/assigned yet), stop and ask the user to provide the stamped case number before drafting the caption — do not proceed with a placeholder case number silently, since getting this wrong on a real filing is a serious, avoidable error.
+**Subagent B — Step 2: Judge requirements research.** Given the judge's name, web search for their individual standing order/civil requirements on `cand.uscourts.gov` and google. Return deviations from the district-wide baseline — stricter page limits, additional topics, required attached orders, special formatting, etc. — or state plainly if no standing order was found.
 
-**Judge's initials must be derived fresh from the judge actually provided, every time — never hardcoded.** Civil L.R. 3-4(a)(3)(C) requires the case number to be followed by the assigned judge's initials (e.g., "4:26-cv-05924-AMO" for Judge Martínez-Olguín). For every new draft:
-1. Confirm the initials actually used in this district for the specific judge named by the user in this conversation (check a real case number involving that judge via web search, or ask the user if uncertain — don't guess at a judge's initials from their name).
-2. Use those initials consistently everywhere a case number appears in the draft: the caption box, the footer, and anywhere else the case number is cited.
-3. If the judge assigned to this case changes from a prior draft in the same conversation (e.g., the user corrects the judge, or the case gets reassigned), update every case-number citation in the new draft accordingly — don't leave stale initials from an earlier version.
+If subagents aren't available, run Steps 1a and 2 inline in either order.
 
-**Extract from complaint:**
-- Full case caption (parties; case number per the rule above), basis for jurisdiction and venue as pled, whether it's a putative class action (and under what Rule 23 theory), causes of action and the statutes/legal theories invoked, relief and damages sought, any related-case references, whether defendants appear to be served (usually unknown from the complaint alone — flag as a placeholder).
-- **Plaintiffs' counsel signature/identification information** (firm name(s), attorney name(s) and state bar number(s), address, phone, fax, email, and the "Attorneys for Plaintiff(s)" line) — from the complaint's first page and signature page. Pull it fresh from this complaint every time, never from a prior case or this skill's own examples.
+## Step 3 — Draft the Statement
 
-### Step 1a and Step 2 — dispatch as two parallel subagents
+Use `references/standing_order_topics.md` for:
+- The 19-topic structure and joint-statement framework
+- Which topics split into "Plaintiffs' Position" / "Defendant's Position" and which stay joint
+- Detailed drafting rules for each topic
+- Formatting baseline (first-line-indent-only, exact-24pt spacing, curly quotes, two spaces after sentence-ending periods, nonbreaking spaces after section/paragraph symbols)
 
-Once Step 1 has produced the case number and the assigned judge's name, run **Steps 1a and 2 as two independent subagents launched at the same time**, rather than doing this research inline. Neither depends on the other's output — one only needs the case number, the other only needs the judge's name.
+**Key standard-language blocks** (drafted the same way in every case, adjusted for singular/plural plaintiff/defendant counts):
+- Evidence Preservation (Topic 6) — Topic 7 (Disclosures) — Topic 8 (Discovery) — Topic 9 (Class Actions, if applicable) — Topic 10 (Related Cases) — Topic 12 (Settlement & ADR) — Topic 13 (Other References) — Topic 14 (Narrowing of Issues) — Topic 16–19 (Trial, Interested Entities, Professional Conduct, Other Matters)
 
-- **Subagent A — Step 1a, public docket check.** Check public docket-tracking mirrors for service status and any related motions or CMC date set.
-- **Subagent B — Step 2, judge requirements research.** Fetch the judge's standing order and report deviations from the district-wide baseline.
+**Custom sections** (derived from complaint/judge requirements):
+- Topic 1 (Jurisdiction and Service and Venue) — Topic 11 (Relief, from complaint's Prayer for Relief) — Topic 15 (Scheduling, with class-cert dates computed per `references/bf_26f_scheduling_protocol.md`)
 
-#### Step 1a — Check for public docket information (service status, related filings)
+**Bluebook citation formatting** (federal style, not California):
+- En dash for ranges (not hyphen): `Compl. ¶¶ 22–44.`
+- "Compl." (not "Complaint") with no comma before the pincite: `Compl. ¶ 9`
+- Introductory signals italicized: *See* Compl. ¶ 8
+- Nonbreaking space after ¶/¶¶/§/§§ and their numbers
 
-Web search public docket-tracking mirrors (CourtListener, PacerMonitor, UniCourt, Justia Dockets) for the case number to see if a summons has been returned executed, if related motions have been filed, or if a CMC date has been set. Note: an empty search result means "not found," not "not yet served." State plainly that this information requires either the attorney's own knowledge of the case or a direct PACER pull, and leave it as a bracketed placeholder in the draft rather than guessing.
+## Step 3a (Calendar-assisted class-cert scheduling, Topic 15 only)
 
-#### Step 2 — Research the assigned judge's requirements
+If a calendar tool is connected AND a real CMC hearing date exists (from Rule 16 Order or user input), compute proposed dates for Plaintiff's Motion for Class Certification, Opposition, Reply, and Hearing using `scripts/frcp6_date.py` with the firm's 26(f) scheduling protocol. Check against the user's calendar for conflicts, confirm each date with the user, and create calendar events for accepted dates.
 
-Web search for the judge's individual standing order / civil case management requirements. Look specifically for deviations from the district-wide baseline (page limits, additional required topics, formatting requirements, whether a joint proposed order must be lodged separately). If no judge-specific standing order turns up, say so explicitly rather than silently assuming the baseline is complete.
+If either condition fails (no calendar tool, or CMC date is still bracketed/unknown), leave these four rows as standard bracketed placeholders per the protocol.
 
-### Step 3 — Draft the statement
+See `references/bf_26f_scheduling_protocol.md` for notice periods, weekday constraints per judge, and the full date-confirmation flow.
 
-Draft the CMS with the structure, formatting, and language described in the judge-specific standing order or the N.D. Cal. district-wide baseline. Populate each topic with plaintiff's position (drawn from the complaint and step 2 research) and clearly bracketed placeholders for defense-counsel positions. Do not fabricate specific dates, damages figures, or procedural history — use bracketed placeholders for anything that requires party negotiation.
+## Step 4 — Produce the .docx
 
-### Step 4 — Produce the .docx
+Read `/mnt/skills/public/docx/SKILL.md` for the docx npm library guidance.
 
-Build the document using professional legal formatting:
-- US Letter page size
-- Standard N.D. Cal. caption format with the actual stamped case number and assigned judge's initials
-- Numbered/lettered sections per the topics
-- Placeholder text visually distinguished (bold + bracket + color, or Word comments)
-- Signature blocks for plaintiff's counsel and (if applicable) defense counsel
-- Footer with case number and page number per Civil L.R. 3-4(c)(3)
-- Page numbering starts on the second page (caption page is unnumbered)
-- Curly quotation marks throughout
-- Two spaces after sentence-ending periods
-- Plaintiff-side content completed, defense-side positions clearly bracketed
+Build the document with these key requirements:
+- **Caption box** with party names, case number (with judge initials per Civil L.R. 3-4), judge, document title, and CMC hearing date/time/courtroom (per Rule 16 Order or placeholders).
+- **Counsel signature table** (2 columns, 1 row, no visible borders) — plaintiffs' counsel in left cell, defense counsel placeholder in right cell.
+- **Signature blocks** (ending of document, 3″ indent) with auto-updating date fields.
+- **Footer** with document title and case number (with judge initials), 10pt Times New Roman, uniformly left column and right-aligned page number (page 1 starts on the second physical page; caption page has no number).
+- **Two document-ending attestations** (Signature Attestation always; Generative AI Certification only if the judge's standing order requires one).
 
-### Step 5 — Flag limitations
+**Formatting baseline** (full detail in `references/standing_order_topics.md`):
+- First-line indent only (0.5″, except Section 11 Relief and Section 15 table).
+- Exact 24pt line spacing everywhere in body text; no extra before/after spacing.
+- ContextualSpacing enabled on every paragraph.
+- Curly quotes throughout (never straight " or ').
+- Two spaces after sentence-ending periods (not after abbreviations/citations mid-sentence).
+- Uniform 10pt Times New Roman footer.
+
+**Verification:** Dispatch the rendered PDF to a subagent with the formatting checklist (indent-only, exact-24pt, 10pt footer, curly quotes, two-space sentence endings, page numbering, table borders, bold firm names, 3″ signature indent, auto-date fields) and have it report pass/fail with any deviations flagged by page. Fix anything before presenting.
+
+## Step 5 — Flag Limitations
 
 In your final response, note:
-- Whether a judge-specific standing order was found
-- Any topics where a placeholder was needed due to missing information
-- Whether the Rule 26(f) conference date lookup succeeded and what it produced
-- A reminder that this is a plaintiff-side working draft, not a filing-ready joint statement until defense counsel completes their portions
+- Whether a judge-specific standing order was found and where.
+- Any topics where you used bracketed placeholders due to missing information.
+- Whether calendar-assisted scheduling (Topic 15) ran, and if not, why (no calendar tool or no confirmed CMC date). If it did run, which rows got real dates vs. brackets, and which calendar events were created.
+- Whether the Step 1 matter-number/26(f) lookup produced a date, its source, and whether Topics 7 and 15's initial-disclosures row are on standard bracket treatment.
+- A reminder that this is plaintiff-side working draft for meet-and-confer, not filing-ready until defense counsel completes their portions.
+
+## Key Files
+
+- `references/standing_order_topics.md` — 19-topic structure, joint vs. split topics, formatting rules, standard language for each topic.
+- `references/bf_26f_scheduling_protocol.md` — 26(f) scheduling timing rules, class-cert motion dates, notice periods per judge.
+- `references/example_build_script.js` — Worked example (Selby v. Brand Evangelists for Beauty Inc., Case No. 4:26-cv-05924-AMO) showing the docx build mechanics; values are case-specific and must be replaced for any new matter.
+- `scripts/frcp6_date.py` — Computes FRCP 6(a)-adjusted dates (month arithmetic, weekend/holiday roll-forward).
+- `scripts/comment.py` — Helper for anchoring Word comments to text (or reference the docx skill's equivalent).
+
+## Notes
+
+- **N.D. Cal. only.** If the case is in a different district, stop and confirm — the 19-topic structure and page limits are specific to this district's Standing Order and won't transfer.
+- **Class action supplement (if applicable).** For putative class actions, confirm Step 3 also covers Civil L.R. 16-9(b) supplemental requirements (see `references/standing_order_topics.md` for details).
+- **Living draft precedent.** If the user has provided prior case management orders, old CMS filings, or judge templates in this or past conversations, prefer those over generic web research for formatting conventions.
+- **Example is not a template.** `references/example_build_script.js` is hardcoded for one test case and serves as a mechanics reference only; replace every case-specific value for new matters.
