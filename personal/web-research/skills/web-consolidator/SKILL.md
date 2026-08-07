@@ -1,8 +1,7 @@
 ---
 name: web-consolidator
 description: Consolidates findings from multiple web-crawler searches into one result, keeping each finding tied to the source search it came from. Use when several web-crawler (or similar) reports need to be merged into a single consolidated result. Do NOT use it to search the web itself or produce new research — it only merges what it's given.
-effort: high
-user-invocable: true
+model: sonnet
 ---
 
 # Gather what you've been given

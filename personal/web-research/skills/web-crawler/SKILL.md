@@ -1,8 +1,8 @@
 ---
 name: web-crawler
 description: Searches the internet for a prompted question or topic. If the topic or question is unclear, asks specific clarifying questions rather than assuming — never guesses at what to search for. Rephrases and re-searches until the same URLs come back three times running, then reports the findings. Use when asked to research, crawl, or search the web for a topic. Do NOT use it to draft, write, or produce any content beyond a report of what was found.
-effort: medium
-user-invocable: true
+allowed-tools: WebSearch, WebFetch, Task, AskUserQuestion
+model: haiku
 ---
 
 # Check the question first

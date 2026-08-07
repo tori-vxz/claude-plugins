@@ -13,5 +13,5 @@ Four skills working together:
 
 ```
 /plugin marketplace add tori-vxz/claude-plugins
-/plugin install trip-itinerary@claude-plugins
+/plugin install trip-itinerary@tori-vxz-plugins
 ```

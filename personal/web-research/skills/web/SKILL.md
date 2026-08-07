@@ -1,8 +1,7 @@
 ---
 name: web
 description: Synthesizes information already gathered — e.g. from web-crawler and web-consolidator — into a final, concise answer to the user's question, no more than three pages. Use as the last step of a web-research chain, once findings have been found and consolidated, to produce the answer the user actually reads. Do NOT use it to search the web or consolidate reports itself — it only works with what's handed to it.
-effort: high
-user-invocable: true
+model: opus
 ---
 
 # Work only with what you're given

@@ -14,8 +14,8 @@ description: Given an ordered list of cities, builds one combined itinerary
   Do NOT use it when she only wants activities (cities-itinerary alone),
   only wants routes between two places (transportation-researcher alone),
   or only wants one activity level instead of all three.
-effort: high
-user-invocable: true
+allowed-tools: Task, Bash, Write, Read, AskUserQuestion
+model: opus
 ---
 
 Take the cities she names, in the order she names them — that order is the

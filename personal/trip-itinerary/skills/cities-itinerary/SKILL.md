@@ -6,8 +6,8 @@ description: Given a list of cities, spawns one city-researcher subagent per
   what to do at or near each of them. Do NOT use it for a single city with
   no comparison needed — city-researcher alone covers that — and do NOT use
   it for transportation between the cities, which is transportation-researcher.
-effort: medium
-user-invocable: true
+allowed-tools: Task, AskUserQuestion
+model: sonnet
 ---
 
 Take the cities she names. If she has not said what activity level she

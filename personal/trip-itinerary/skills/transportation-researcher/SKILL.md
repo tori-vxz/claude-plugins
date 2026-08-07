@@ -7,8 +7,8 @@ description: Researches current travel options between two locations at a given
   buses, trains, ferries, or any other public transportation. Do NOT use it for
   single-mode lookups the user has already narrowed to one kind of transport
   (e.g. "find me a flight") unless they ask for the full comparison.
-effort: medium
-user-invocable: true
+allowed-tools: WebSearch, WebFetch, AskUserQuestion
+model: sonnet
 ---
 
 Research travel options between two locations at a stated budget, and report

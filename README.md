@@ -18,7 +18,7 @@ Each plugin is self-contained and separately installable. See `.claude-plugin/ma
 
 ```
 /plugin marketplace add tori-vxz/claude-plugins
-/plugin install calendar-assistant@claude-plugins
-/plugin install web-research@claude-plugins
-/plugin install trip-itinerary@claude-plugins
+/plugin install calendar-assistant@tori-vxz-plugins
+/plugin install web-research@tori-vxz-plugins
+/plugin install trip-itinerary@tori-vxz-plugins
 ```

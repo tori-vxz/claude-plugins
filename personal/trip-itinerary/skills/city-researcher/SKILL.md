@@ -6,8 +6,8 @@ description: Researches vacation activities and notable places to visit in a
   activity's official website. Use when the user names a city and an
   activity level and wants ideas for what to do there. Do NOT use it to plan
   transportation between cities — that's transportation-researcher.
-effort: medium
-user-invocable: true
+allowed-tools: WebSearch, WebFetch, AskUserQuestion
+model: sonnet
 ---
 
 Research vacation activities and notable places to visit in a given city,
