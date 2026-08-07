@@ -8,6 +8,11 @@
   },
   "plugins": [
     {
+      "name": "calendar-assistant",
+      "description": "Reads an uploaded court order, gathers the applicable civil procedure, judge, and local rules, calculates the resulting deadline(s), and calendars them on the correct matter calendar through a provider-agnostic calendar connector.",
+      "source": "./litigation/calendar-assistant"
+    },
+    {
       "name": "web-research",
       "description": "Multi-angle web research chain (web-crawler, web-consolidator, web) for one-off research questions or as a research step inside other skills.",
       "source": "./litigation/web-research"

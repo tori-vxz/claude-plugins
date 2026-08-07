@@ -1,0 +1,18 @@
+{
+  "name": "calendar-assistant",
+  "version": "1.0.0",
+  "description": "Given a user-uploaded court order, finds the internal matter number, dispatches civpro-calculator, judge-rules-researcher, and local-rules-researcher to gather all applicable rules, calculates the resulting deadline(s), and calendars the result on the matching internal-matter calendar through a provider-agnostic calendar connector. Can update or delete existing events on that matter's calendar, but only with explicit user approval each time. Never drafts or writes any filing, and never calendars to the user's personal calendar.",
+  "author": {
+    "name": "tori-vxz",
+    "url": "https://github.com/tori-vxz"
+  },
+  "homepage": "https://github.com/tori-vxz/litigation-skills",
+  "repository": "https://github.com/tori-vxz/litigation-skills",
+  "keywords": [
+    "litigation",
+    "calendaring",
+    "deadlines",
+    "civil-procedure",
+    "legal"
+  ]
+}

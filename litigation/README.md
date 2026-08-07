@@ -17,7 +17,7 @@ All six components work together. Three can be invoked directly by name (the "sk
 ### Direct-use skills:
 
 **calendar-assistant**  
-Watches for uploads of court orders. Extracts the matter number and deadline, dispatches three research agents to gather the applicable civil procedure rules, calculates the deadline, and creates a calendar event on the correct matter calendar with both the judge's calendar and internal matter tracking built in. Takes user approval before modifying existing calendar events. Never drafts anything.
+Watches for uploads of court orders. Extracts the matter number and deadline, dispatches three research agents to gather the applicable civil procedure rules, calculates the deadline, and creates a calendar event on the correct matter calendar through a provider-agnostic calendar connector (Google Calendar, Microsoft 365/Outlook, iCloud, and others), with internal matter tracking built in. Asks whether anyone should be added as a guest before creating events. Takes user approval before modifying existing calendar events. Never drafts anything. Packaged as its own installable plugin, bundled with its three research agents — see [`calendar-assistant/`](calendar-assistant/).
 
 **nd-cal-cmc-stmt-builder**  
 Given a complaint and the assigned judge, drafts a plaintiff-side Joint Case Management Statement in the exact format required by N.D. Cal. (Civil L.R. 16-9), with the complaint facts and the judge's standing-order deviations built in, and with defense-counsel positions clearly bracketed so opposing counsel can complete the joint filing. Uses the Rule 26(f) Scheduling Protocol to propose class-certification briefing and trial dates, and optionally creates calendar events for each accepted deadline.
@@ -74,7 +74,7 @@ Each skill and agent includes:
 - Memory persistence across sessions, so context from prior cases builds up
 - Background-execution capability for research subagents, keeping raw search noise out of the main conversation
 
-See each skill's or agent's own SKILL.md or AGENT.md file for full operating instructions and use cases.
+See each skill's or agent's own SKILL.md or AGENT.md file for full operating instructions and use cases. The calendar-assistant skill and its three research agents live under [`calendar-assistant/`](calendar-assistant/); web-research's under [`web-research/`](web-research/).
 
 ---
 

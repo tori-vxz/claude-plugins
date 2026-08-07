@@ -13,6 +13,7 @@ Each folder is its own self-contained, separately installable plugin. See `.clau
 
 ```
 /plugin marketplace add tori-vxz/litigation-skills
+/plugin install calendar-assistant@litigation-skills # from litigation/
 /plugin install web-research@litigation-skills      # from litigation/
 /plugin install trip-itinerary@litigation-skills
 ```
