@@ -1,6 +1,6 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "litigation-skills",
+  "name": "claude-plugins",
   "description": "Marketplace for tori-vxz's Claude Code plugins: legal-practice skills and unrelated personal skills, sharing one repo and install URL.",
   "owner": {
     "name": "tori-vxz",

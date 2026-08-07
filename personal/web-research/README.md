@@ -15,8 +15,8 @@ Used by the calendar-assistant and nd-cal-cmc-stmt-builder skills as needed for 
 From any Claude Code session:
 
 ```
-/plugin marketplace add tori-vxz/litigation-skills
-/plugin install web-research@litigation-skills
+/plugin marketplace add tori-vxz/claude-plugins
+/plugin install web-research@claude-plugins
 ```
 
 ## Layout

@@ -12,6 +12,6 @@ Four skills working together:
 ## Installing it elsewhere
 
 ```
-/plugin marketplace add tori-vxz/litigation-skills
-/plugin install trip-itinerary@litigation-skills
+/plugin marketplace add tori-vxz/claude-plugins
+/plugin install trip-itinerary@claude-plugins
 ```

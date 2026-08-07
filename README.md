@@ -1,4 +1,4 @@
-# litigation-skills
+# claude-plugins
 
 My space for building and testing Claude Code skills and agents. Split into two unrelated groups that happen to share this repo because it's convenient to install all of them from one URL: legal-practice tooling, and personal projects.
 
@@ -17,8 +17,8 @@ Each plugin is self-contained and separately installable. See `.claude-plugin/ma
 ## Installing
 
 ```
-/plugin marketplace add tori-vxz/litigation-skills
-/plugin install calendar-assistant@litigation-skills
-/plugin install web-research@litigation-skills
-/plugin install trip-itinerary@litigation-skills
+/plugin marketplace add tori-vxz/claude-plugins
+/plugin install calendar-assistant@claude-plugins
+/plugin install web-research@claude-plugins
+/plugin install trip-itinerary@claude-plugins
 ```
