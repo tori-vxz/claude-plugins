@@ -1,0 +1,17 @@
+{
+  "name": "trip-itinerary",
+  "version": "1.0.0",
+  "description": "Builds a full trip itinerary across an ordered list of cities: activities in each city at three effort levels (low, medium, high), and travel between every consecutive pair of cities at three budget tiers (cheapest, mid-range, luxury), every item carrying its own link. Delivers either as a formatted three-tab Excel workbook or directly in the conversation. city-researcher and transportation-researcher can also be used on their own for a single city or a single route. cities-itinerary fans city-researcher out across a list of cities. trip-options-consolidator is the top-level skill that runs all three and merges the results into one deliverable.",
+  "author": {
+    "name": "tori-vxz",
+    "url": "https://github.com/tori-vxz"
+  },
+  "homepage": "https://github.com/tori-vxz/litigation-skills",
+  "repository": "https://github.com/tori-vxz/litigation-skills",
+  "keywords": [
+    "travel",
+    "trip-planning",
+    "itinerary",
+    "spreadsheet"
+  ]
+}

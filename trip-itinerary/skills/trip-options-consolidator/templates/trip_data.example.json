@@ -1,0 +1,141 @@
+{
+  "_comment": "This is a worked example (the New York -> Venice -> Florence -> New York trip), not a blank form. Copy this shape when merging subagent results: 'sequence' lays out the sheet from top to bottom once, reused on every tab; 'travel_legs' is keyed by the same labels used in 'sequence' and is also shared across every tab, since travel budget doesn't depend on activity level; 'activities' has one entry per tab, each keyed by city name. Drop this file (minus this comment key, which the build script ignores) next to build_itinerary.py's input path before running it.",
+  "output_filename": "Venice_Florence_Trip_Itinerary.xlsx",
+  "sequence": [
+    { "type": "leg", "label": "New York to Venice" },
+    { "type": "city", "name": "Venice" },
+    { "type": "leg", "label": "Venice to Florence" },
+    { "type": "city", "name": "Florence" },
+    { "type": "leg", "label": "Florence to New York" }
+  ],
+  "travel_legs": {
+    "New York to Venice": [
+      {
+        "tier": "Cheapest",
+        "item": "Fly JFK to Milan (Malpensa), train onward to Venice",
+        "details": "From about $245 total, ~10-12 hrs total. Flight JFK-MXP from $236 one-way (Kayak), then Milan Centrale to Venice Santa Lucia train from about $9, ~2.5-4 hrs (Omio). Best overall value of the options found.",
+        "link": "https://www.kayak.com/flight-routes/New-York-John-F-Kennedy-Intl-JFK/Milan-Malpensa-MXP"
+      },
+      {
+        "tier": "Mid-range",
+        "item": "Delta Air Lines, nonstop JFK to Venice",
+        "details": "Around $565-620 round trip, ~8h20m each way, daily flights (DL288), no connections. Cheapest realistic nonstop and no transfer.",
+        "link": "https://www.expedia.com/lp/flights/jfk/vce/new-york-to-venice"
+      },
+      {
+        "tier": "Luxury",
+        "item": "Delta One, nonstop JFK to Venice",
+        "details": "About $3,437 round trip, ~8h15m each way, no connections - lie-flat business seats, daily out of JFK. Well under the $15,000 ceiling.",
+        "link": "https://www.kayak.com/flight-routes/Business-Class-United-States-US0/Venice-Marco-Polo-VCE.bc.ksp"
+      }
+    ],
+    "Venice to Florence": [
+      {
+        "tier": "Cheapest",
+        "item": "Italo high-speed train",
+        "details": "Fares start around EUR18.90 (~$20), ~2 hrs, 11 trains a day. Fast, comfortable, and the cheapest option found - no direct flight exists on this route.",
+        "link": "https://www.italotreno.com/en/destinations-timetable/venice-florence-tickets"
+      },
+      {
+        "tier": "Mid-range",
+        "item": "Trenitalia Frecciarossa, Premium class",
+        "details": "Roughly EUR35-55, ~2 hrs. Best balance of speed, comfort and price; Italo Business class is a close alternative at the same price and time.",
+        "link": "https://www.trenitalia.com/en.html"
+      },
+      {
+        "tier": "Luxury",
+        "item": "Italo Club Executive class",
+        "details": "About EUR120-196, ~2 hrs. Poltrona Frau leather recliners, steward service, complimentary wine/prosecco and snacks, up to 3 hrs lounge access at both stations.",
+        "link": "https://www.italotreno.com/en/club-executive-luxury-experience"
+      }
+    ],
+    "Florence to New York": [
+      {
+        "tier": "Cheapest",
+        "item": "Train to Rome, then Norse Atlantic Airways nonstop to New York",
+        "details": "Roughly $310-330 one-way total. Florence to Rome Fiumicino by train, ~2h16m, from about $25-41, then Norse Atlantic nonstop FCO-JFK, one-way fares around $285. Only one real transfer, and the ocean crossing is nonstop.",
+        "link": "https://www.thetrainline.com/en-us/train-times/florence-to-rome-fiumicino-airport"
+      },
+      {
+        "tier": "Mid-range",
+        "item": "Scandinavian Airlines (SAS), via Copenhagen",
+        "details": "About $431 round trip, ~25 hrs total travel time, one connection in Copenhagen. British Airways via London is a close second at about $426 with more daily departures.",
+        "link": "https://www.flysas.com/en/flight-routes/copenhagen/florence/"
+      },
+      {
+        "tier": "Luxury",
+        "item": "ITA Airways Business Class, via Rome",
+        "details": "Fares start around EUR2,348 (~$2,550), ~13.5 hrs total with one stop in Rome. Best overall value of the business-class options - one ticket, one airline, well under the $15,000 ceiling.",
+        "link": "https://www.ita-airways.com/lhg/us/en/o-d/cy-cy/florence-new-york"
+      }
+    ]
+  },
+  "activities": {
+    "Low Activity": {
+      "Venice": [
+        {
+          "type": "Activity",
+          "item": "Peggy Guggenheim Collection",
+          "details": "20th-century art collection (Picasso, Pollock, Dali) in Peggy Guggenheim's former home on the Grand Canal, with a quiet sculpture garden. Open daily except Tuesdays, 10am-6pm.",
+          "link": "https://www.guggenheim-venice.it/en/"
+        },
+        {
+          "type": "Day trip",
+          "item": "Scrovegni Chapel, Padua",
+          "details": "A single small chapel completely covered in Giotto's frescoes; short video then 15-20 min seated inside. ~25-50 min from Venice by train; book ahead, slots sell out.",
+          "link": "https://www.cappelladegliscrovegni.it/index.php/en/"
+        }
+      ],
+      "Florence": [
+        {
+          "type": "Activity",
+          "item": "Museo Bardini",
+          "details": "Compact museum of antiques and art in a quiet part of the city. Open Fri-Mon, 11am-5pm (extended to 8pm through September).",
+          "link": "https://cultura.comune.fi.it/pagina/musei-civici-fiorentini/museo-stefano-bardini"
+        }
+      ]
+    },
+    "Medium Activity": {
+      "Venice": [
+        {
+          "type": "Activity",
+          "item": "Doge's Palace",
+          "details": "Grand Gothic palace, seat of Venetian government for centuries; large museum of state rooms and art. Advance booking recommended.",
+          "link": "https://palazzoducale.visitmuve.it/en/visitor-information/"
+        },
+        {
+          "type": "Tip",
+          "item": "September timing in Venice",
+          "details": "Regata Storica (costumed 16th-century boat parade on the Grand Canal) falls on Sunday, Sept 6, 2026 - free viewing along the banks. Venice International Film Festival runs Sept 2-12 on the Lido and brings crowds and higher prices there during that window.",
+          "link": "https://www.veneziaunica.it/en/things-to-do-in-venice/events/regata-storica-di-venezia-2026"
+        }
+      ],
+      "Florence": [
+        {
+          "type": "Activity",
+          "item": "Uffizi Gallery",
+          "details": "One of the world's great art museums - Botticelli's Birth of Venus, Da Vinci, Caravaggio, across 45 halls. Book timed entry ahead for September.",
+          "link": "https://www.uffizi.it/en"
+        }
+      ]
+    },
+    "High Activity": {
+      "Venice": [
+        {
+          "type": "Activity",
+          "item": "Climb Torre dell'Orologio (Clock Tower)",
+          "details": "Guided climb up narrow, steep interior stairs through the Renaissance clock mechanism in Piazza San Marco. Small guided groups, ~50 min.",
+          "link": "https://torreorologio.visitmuve.it/en/home/"
+        }
+      ],
+      "Florence": [
+        {
+          "type": "Activity",
+          "item": "Climb Brunelleschi's Dome",
+          "details": "463 steps with no elevator, spiraling up between the dome's two shells to a walkway around the lantern. Book a timed slot; ID now required at entry.",
+          "link": "https://tickets.duomo.firenze.it/en/"
+        }
+      ]
+    }
+  }
+}

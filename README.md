@@ -2,6 +2,8 @@
 
 A coordinated set of Claude AI skills and agents built for legal practice in the U.S. District Court for the Northern District of California.
 
+**Repo layout:** this repo hosts two unrelated, separately installable plugins, each in its own top-level folder — [`litigation/`](litigation/) (this system, described below) and [`trip-itinerary/`](trip-itinerary/) (a personal trip-planning skill, unrelated to litigation work). Both install from this same repo/URL; see `.claude-plugin/marketplace.json` for the full list.
+
 ## Overview
 
 This system enables lawyers to automate three core litigation workflows:

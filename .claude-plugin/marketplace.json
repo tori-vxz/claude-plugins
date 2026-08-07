@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "litigation-skills",
-  "description": "Marketplace for plugins from the litigation skills system.",
+  "description": "Marketplace for tori-vxz's Claude Code plugins: litigation-practice skills and unrelated personal skills, sharing one repo and install URL.",
   "owner": {
     "name": "tori-vxz",
     "url": "https://github.com/tori-vxz"
@@ -10,7 +10,12 @@
     {
       "name": "web-research",
       "description": "Multi-angle web research chain (web-crawler, web-consolidator, web) for one-off research questions or as a research step inside other skills.",
-      "source": "./web-research"
+      "source": "./litigation/web-research"
+    },
+    {
+      "name": "trip-itinerary",
+      "description": "Builds a full trip itinerary across an ordered list of cities: activities at three effort levels and travel at three budget tiers between every leg, delivered as a spreadsheet or in the conversation.",
+      "source": "./trip-itinerary"
     }
   ]
 }
