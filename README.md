@@ -1,19 +1,20 @@
-# litigation-skills
+# litigation-skills (Personal branch)
 
-My space for building and testing Claude Code skills and agents. Not a single coordinated product — the folders here are separate, unrelated projects that happen to share this repo because it's convenient to install both from one URL. What ties them together is just that: this is where I mess around with Claude.
+The personal-projects branch of this repo: unrelated skill sets that happen to share this repo because it's convenient to install both from one URL.
 
-Each folder is its own self-contained, separately installable plugin. See `.claude-plugin/marketplace.json` for the install list.
+Looking for the legal-practice side (calendar-assistant)? That lives on the [`Legal`](https://github.com/tori-vxz/litigation-skills/tree/Legal) branch of this same repo.
 
 ## What's here
 
-- **[`litigation/`](litigation/)** — a coordinated set of skills and agents for legal practice in the U.S. District Court for the Northern District of California: case-management deadlines, Joint Case Management Statement drafting, and civil-procedure rule research. See its own [README](litigation/README.md) for the full picture.
-- **[`trip-itinerary/`](trip-itinerary/)** — a personal trip-planning skill set: researches things to do in a city, transportation between cities, and builds a full multi-city itinerary as a spreadsheet. See its own [README](trip-itinerary/README.md).
+- **[`web-research/`](web-research/)** — a multi-angle web research chain: web-crawler names every plausible category of explanation for a question and re-searches each until results stabilize, web-consolidator merges multiple crawler reports into one, and web writes the final answer, resolving conflicts by source authority and keeping a URL attached to every fact.
+- **[`trip-itinerary/`](trip-itinerary/)** — a personal trip-planning skill set: researches things to do in a city, transportation between cities, and builds a full multi-city itinerary as a spreadsheet.
 
 ## Installing
 
+This branch is the repo's default, so:
+
 ```
 /plugin marketplace add tori-vxz/litigation-skills
-/plugin install calendar-assistant@litigation-skills # from litigation/
-/plugin install web-research@litigation-skills      # from litigation/
+/plugin install web-research@litigation-skills
 /plugin install trip-itinerary@litigation-skills
 ```
