@@ -10,7 +10,7 @@
       "name": "calendar-assistant",
       "source": "./legal/calendar-assistant",
       "description": "Calculates litigation deadlines from a court order and records them for the matter.",
-      "version": "1.1.0",
+      "version": "1.3.0",
       "category": "legal"
     },
     {
