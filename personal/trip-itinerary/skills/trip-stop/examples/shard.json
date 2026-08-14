@@ -1,0 +1,71 @@
+{
+  "city": "Seoul",
+  "inbound_leg": {
+    "label": "Busan to Seoul",
+    "options": [
+      {
+        "tier": "Cheapest",
+        "item": "Kobus intercity express bus, Busan to Seoul",
+        "details": "Direct express service, about 4h15m, multiple daily departures from Busan Central Bus Terminal to Seoul Express Bus Terminal",
+        "link": "https://www.kobus.co.kr/main.do"
+      },
+      {
+        "tier": "Mid-range",
+        "item": "KTX high-speed train, Busan to Seoul",
+        "details": "Non-stop KTX service, about 2h35m, reserved economy seating, Busan Station to Seoul Station",
+        "link": "https://www.letskorail.com/ebizbf/EbizBfService_pr10005.do"
+      },
+      {
+        "tier": "Luxury",
+        "item": "KTX First Class, Busan to Seoul, with door-to-door car transfers",
+        "details": "KTX First Class carriage, about 2h35m, plus a chauffeured car transfer to Busan Station and from Seoul Station, roughly 3h15m total door-to-door",
+        "link": "https://www.korail.com/ticket/reservation"
+      }
+    ]
+  },
+  "trailing_leg": null,
+  "activities": {
+    "Low Activity": [
+      {
+        "type": "Activity",
+        "item": "National Museum of Korea",
+        "details": "Large, air-conditioned collection halls with ample seating; a sit-and-stroll pace throughout",
+        "link": "https://www.museum.go.kr/site/eng/home"
+      },
+      {
+        "type": "Tip",
+        "item": "Insadong tea house circuit",
+        "details": "Cluster of traditional tea houses within a couple of blocks of each other; minimal walking if you pick adjoining stops",
+        "link": "https://english.visitseoul.net/attractions/Insadong_/611"
+      }
+    ],
+    "Medium Activity": [
+      {
+        "type": "Activity",
+        "item": "Gyeongbokgung Palace and Bukchon Hanok Village walk",
+        "details": "Palace grounds plus a roughly 0.8 mile stroll through the hanok alleys, even paving throughout",
+        "link": "https://www.royalpalace.go.kr/content/eng/main.do"
+      },
+      {
+        "type": "Day trip",
+        "item": "Nami Island",
+        "details": "About 1h15m from Seoul by shuttle and ferry; flat, tree-lined paths around the island, under a mile for the main loop",
+        "link": "https://www.namisum.com/eng/"
+      }
+    ],
+    "High Activity": [
+      {
+        "type": "Activity",
+        "item": "Bukhansan National Park, Baegundae Peak trail",
+        "details": "Hilly granite-peak trail, over a mile one-way to the summit, rated strenuous",
+        "link": "https://english.knps.or.kr/Knp/Bukhansan/Intro/Index.aspx"
+      },
+      {
+        "type": "Day trip",
+        "item": "DMZ and Dorasan Observatory tour",
+        "details": "About 1h from Seoul; includes an uneven, hilly walking tour of the Third Tunnel and observation post",
+        "link": "https://en.unikorea.go.kr/"
+      }
+    ]
+  }
+}

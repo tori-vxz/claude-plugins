@@ -1,7 +1,7 @@
 {
   "name": "trip-itinerary",
-  "version": "1.1.0",
-  "description": "Builds a multi-city trip itinerary at three activity levels and three travel budget tiers, as a spreadsheet or in conversation.",
+  "version": "2.0.0",
+  "description": "Builds a multi-city trip itinerary at three activity levels and three travel budget tiers. A door skill acts as lead and spawns exactly one subagent per stop — a city plus its inbound travel leg — in parallel, with no nesting: each subagent researches its own stop and writes a single JSON shard to disk. The lead then runs one build script that reads every shard off disk and assembles the deliverables, an xlsx workbook and a markdown itinerary, without any shard's contents entering a model's context.",
   "author": {
     "name": "tori-vxz",
     "url": "https://github.com/tori-vxz"

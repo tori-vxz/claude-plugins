@@ -1,13 +1,37 @@
 # Trip Itinerary Plugin
 
-Unrelated to the litigation skills elsewhere in this repo — a personal trip-planning skill, kept in its own folder but installed from the same repo/URL.
+Unrelated to the litigation skills elsewhere in this repo — a personal trip-planning plugin, kept in its own folder but installed from the same repo/URL.
 
-Four skills working together:
+Give it an ordered list of cities and it produces one itinerary covering all three activity levels (low, medium, high), each showing all three travel budget tiers (cheapest, mid-range, luxury) for every leg, with a link on every activity and every travel option. The deliverable is an `.xlsx` workbook with one tab per activity level, plus the same itinerary as markdown.
 
-1. **`city-researcher`** — vacation activities and notable places in one city (including day trips up to 2.5 hours out), filtered to an activity level (low/medium/high), each with a link to its official site.
-2. **`cities-itinerary`** — given a list of cities, spawns one `city-researcher` per city in parallel.
-3. **`transportation-researcher`** — top 5 ranked ways to get between two locations at a given budget, with a purchase link for every segment.
-4. **`trip-options-consolidator`** — the top-level skill: given an ordered list of cities, runs the above across every leg and every combination of activity level and budget tier, and delivers the result as a formatted three-tab spreadsheet or directly in the conversation.
+## How it is put together
+
+A **stop** is a city plus the travel leg arriving at it. One subagent owns one stop, start to finish, in a single fresh context — the city's activities at all three activity levels in one research pass, and its inbound leg at all three budget tiers. The last city additionally owns the trailing leg to an ending city, if one was named. For `n` cities that is exactly `n` subagents, spawned together, none of them nested.
+
+Each subagent writes one JSON shard to disk and returns a single line. The lead never reads the research prose. A shard is named by trip position (`01-busan.json`, `02-seoul.json`, …) so sorting them lexicographically reconstructs the trip order.
+
+The lead then runs one script over the shard directory. That script validates every shard and prints a shortfall report — missing links, a leg without all three tiers, an empty activity level — which is the quality gate, since nothing else reads the shards. It derives the sequence, renders the workbook and the markdown, and stops.
+
+### Two skills
+
+1. **`trip`** — the door skill and the lead's body: establishes the inputs, assigns the stops, spawns the subagents, runs the build script, relays the report.
+2. **`trip-stop`** — the worker skill: research one stop, write one shard, report one line.
+
+### Two agents
+
+1. **`trip-main`** — the lead, for running the whole thing headless with no human present to answer questions:
+
+   ```
+   claude -p --agent trip-itinerary:trip-main "/trip-itinerary:trip Busan, Seoul, Incheon. Dates 2026-09-10 to 2026-09-24. Budget USD 2000."
+   ```
+
+2. **`trip-scout`** — one spawned per stop, running `trip-stop`.
+
+Interactively, invoke `/trip-itinerary:trip` and answer the one round of questions it asks.
+
+## Requirements
+
+`openpyxl` (see `skills/trip/requirements.txt`) for the workbook. Everything else is standard library.
 
 ## Installing it elsewhere
 
