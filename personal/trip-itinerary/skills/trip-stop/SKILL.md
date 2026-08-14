@@ -64,12 +64,36 @@ transfer count together, and keep the single best one for each tier:
 
 - **Cheapest**
 - **Mid-range**
-- **Luxury** — subject to a hard ceiling of $15,000 (or the stated
+- **Luxury** — subject to a hard ceiling of $10,000 (or the stated
   currency's equivalent) regardless of what the overall budget otherwise
-  allows. If nothing luxury-tier clears both the ceiling and the $15,000
-  cap, you still owe an entry — pick the best option that does clear the
-  cap and note the constraint in that entry's `details`, since the tier
-  array always needs exactly 3 entries.
+  allows. Never report an option above this, whatever the stated budget
+  otherwise implies. If nothing luxury-tier clears both the ceiling and the
+  $10,000 cap, you still owe an entry — pick the best option that does
+  clear the cap and note the constraint in that entry's `details`, since
+  the tier array always needs exactly 3 entries.
+
+Give two things for every option as their own fields, not folded into
+`details` — the build script's price column depends on having them
+separately:
+
+- `cost` — what that option costs in total, as one figure with its
+  currency, e.g. `"$245"` or `"KRW 59,800"`.
+- `connections` — `"Nonstop"`, or `"1 transfer"`, `"2 transfers"`, counting
+  every change of vehicle across the whole journey, including changes
+  between modes.
+
+Leave either field out entirely if it's genuinely not findable — never
+guess one. `details` then covers what those two don't say (comfort,
+timings, frequency), not a restatement of the price.
+
+**If a tier turns up more than one real way to make the journey** — a
+train and a bus that are both the cheapest sort of option, two airlines
+that are both mid-range — never pack them into one `details` string. Give
+that tier an `options` list instead of a single `item`/`cost`/
+`connections`/`details`/`link`, one entry per service, each naming the
+actual carrier in its own `item` (the airline and flight number, the
+specific train, the specific bus line) — see the `Cheapest` entry on the
+inbound leg in `examples/shard.json`.
 
 A leg you weren't assigned (the `none` field) is written as `null` for that
 leg's whole key — not as an object with empty options.
@@ -80,12 +104,14 @@ Assemble one JSON object matching
 `${CLAUDE_PLUGIN_ROOT}/skills/trip-stop/examples/shard.json` exactly —
 same keys, same nesting, same enum spelling and capitalization
 (`Cheapest`/`Mid-range`/`Luxury`; `Activity`/`Day trip`/`Tip`;
-`Low Activity`/`Medium Activity`/`High Activity`). Leg options carry
-`tier`/`item`/`details`/`link`; activities carry `type`/`item`/`details`/
-`link` — don't cross the two shapes. Every single entry, leg option and
-activity alike, carries a working `http`/`https` `link`; if you can't find
-an official page for something, use the page you found it on rather than
-leaving the field out.
+`Low Activity`/`Medium Activity`/`High Activity`). A leg option carries
+`tier`/`item`/`cost`/`connections`/`details`/`link`, or `tier` plus an
+`options` list (see above) when the tier has more than one service;
+activities carry `type`/`item`/`details`/`link` — don't cross the two
+shapes. Every single entry — leg option, each entry inside an `options`
+list, and activity alike — carries a working `http`/`https` `link`; if you
+can't find an official page for something, use the page you found it on
+rather than leaving the field out.
 
 Write the file to the exact `output path` you were given, using `Write`.
 Never derive your own filename, and never write anywhere else.

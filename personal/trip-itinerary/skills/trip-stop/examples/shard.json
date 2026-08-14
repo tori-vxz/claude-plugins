@@ -5,20 +5,37 @@
     "options": [
       {
         "tier": "Cheapest",
-        "item": "Kobus intercity express bus, Busan to Seoul",
-        "details": "Direct express service, about 4h15m, multiple daily departures from Busan Central Bus Terminal to Seoul Express Bus Terminal",
-        "link": "https://www.kobus.co.kr/main.do"
+        "options": [
+          {
+            "item": "Kobus intercity express bus, Busan to Seoul",
+            "cost": "KRW 27,000",
+            "connections": "Nonstop",
+            "details": "Direct express service, about 4h15m, multiple daily departures from Busan Central Bus Terminal to Seoul Express Bus Terminal",
+            "link": "https://www.kobus.co.kr/main.do"
+          },
+          {
+            "item": "Mugunghwa-ho regional train, Busan to Seoul",
+            "cost": "KRW 28,600",
+            "connections": "Nonstop",
+            "details": "Slower regional train, about 5h20m, no advance booking needed and consistently the cheapest rail fare on the route",
+            "link": "https://www.letskorail.com/ebizbf/EbizBfService_pr10005.do"
+          }
+        ]
       },
       {
         "tier": "Mid-range",
+        "cost": "KRW 59,800",
+        "connections": "Nonstop",
         "item": "KTX high-speed train, Busan to Seoul",
         "details": "Non-stop KTX service, about 2h35m, reserved economy seating, Busan Station to Seoul Station",
         "link": "https://www.letskorail.com/ebizbf/EbizBfService_pr10005.do"
       },
       {
         "tier": "Luxury",
+        "cost": "KRW 210,000",
+        "connections": "Nonstop",
         "item": "KTX First Class, Busan to Seoul, with door-to-door car transfers",
-        "details": "KTX First Class carriage, about 2h35m, plus a chauffeured car transfer to Busan Station and from Seoul Station, roughly 3h15m total door-to-door",
+        "details": "KTX First Class carriage, about 2h35m, plus a chauffeured car transfer to Busan Station and from Seoul Station, roughly 3h15m total door-to-door. Well under the $10,000 ceiling.",
         "link": "https://www.korail.com/ticket/reservation"
       }
     ]

@@ -4,7 +4,8 @@ description: Given an ordered list of cities, travel dates, and a budget
   ceiling, builds a complete trip itinerary — activities at all three
   activity levels (low, medium, high) and travel options at all three
   budget tiers (cheapest, mid-range, luxury) for every leg between stops —
-  and delivers it as a spreadsheet plus a markdown file. Use when the user
+  and always delivers it as a spreadsheet, either an Excel workbook or a
+  Claude artifact, whichever she picks. Use when the user
   wants a full, end-to-end trip plan spanning multiple cities, covering both
   what to do at each stop and how to travel between them. Also accepts an
   optional beginning city (a leg before city 1) and an optional ending city
@@ -20,15 +21,23 @@ user-invocable: true
 # trip
 
 You are the lead. Establish the trip's shape, farm out the research one stop
-at a time, then assemble it into a workbook. You never do the travel or
+at a time, then assemble it into a spreadsheet. You never do the travel or
 activity research yourself, and you never read a shard back once a scout has
 written it — that would repeat work you already paid a subagent to do.
 
 ## 1. Establish the inputs, in one round
 
-You need five things: **cities in trip order**, **travel dates**, **budget
-ceiling and its currency**, and the two optional extras, **beginning city**
-and **ending city**.
+You need six things: **cities in trip order**, **travel dates**, **budget
+ceiling and its currency**, **output format**, and the two optional extras,
+**beginning city** and **ending city**.
+
+Output format is always one of two: an **Excel file** she opens on her
+machine, or a **Claude artifact** she opens in the browser and can share by
+link. It is the same spreadsheet either way — same six columns, same tabs,
+same section headers, same colors, built from the same shards by the same
+script — so the choice is only about where she wants to read it. Never
+offer a third option of writing the itinerary out in the conversation
+instead; she always gets a spreadsheet.
 
 This skill has no guaranteed interactive caller. When it runs under
 `trip-itinerary:trip-main`, there is no `AskUserQuestion` tool available at all — a
@@ -36,11 +45,12 @@ skill body that waits on a question nobody can answer hangs forever instead
 of failing. So resolve inputs in this order, every time:
 
 1. **Parse the invocation string first.** Pull cities, dates, budget
-   ceiling + currency, and any named beginning/ending city directly out of
-   what you were given.
+   ceiling + currency, output format, and any named beginning/ending city
+   directly out of what you were given.
 2. **If cities, dates, or budget ceiling is still missing, and
    `AskUserQuestion` is available to you, ask for every missing field in one
    round** — not one question per field, one round covering all of them.
+   Ask for output format in that same round if it wasn't already named.
    Beginning city and ending city are never grounds for a question; leave
    either unset if it wasn't named.
 3. **If cities, dates, or budget ceiling is still missing, and
@@ -49,6 +59,10 @@ of failing. So resolve inputs in this order, every time:
    budget ceiling") and do not spawn anything. Guessing a date or a budget
    produces research nobody asked for; silently hanging produces nothing at
    all. Neither is acceptable.
+4. **If output format alone is still unset when you reach step 5**
+   (`AskUserQuestion` unavailable, or she genuinely didn't say), default to
+   Excel. Unlike cities/dates/budget, a missing format preference isn't
+   grounds to fail — Excel is always a safe, usable default.
 
 ## 2. Create the work directory
 
@@ -100,14 +114,16 @@ Keep those lines to hand, but they are not the gap report — the gap report
 is `build.py`'s own, produced in step 5. Do not open or read the shard file
 itself; the scout already wrote it to the exact path you assigned.
 
-## 5. Build the workbook
+## 5. Build the result
 
 Once every scout has returned, run through `Bash`, using the literal
 variable shown — not an absolute path, since `${CLAUDE_PLUGIN_ROOT}` is the
-only form that resolves correctly regardless of where this run started:
+only form that resolves correctly regardless of where this run started.
+Pass `--format artifact` if that's what she chose (or defaulted to); leave
+`--format` off entirely for Excel, since `excel` is the script's default:
 
 ```
-python3 "${CLAUDE_PLUGIN_ROOT}/skills/trip/scripts/build.py" <workdir> --out-dir <cwd>
+python3 "${CLAUDE_PLUGIN_ROOT}/skills/trip/scripts/build.py" <workdir> --out-dir <cwd> [--format artifact]
 ```
 
 ## 6. Report and stop
@@ -115,8 +131,17 @@ python3 "${CLAUDE_PLUGIN_ROOT}/skills/trip/scripts/build.py" <workdir> --out-dir
 `build.py` prints the gap report on stdout in step 5 — it validates the
 shards you never read, so it, not the scouts' self-reporting, is the quality
 gate. Relay that report verbatim if it names anything, adding any scout
-summary gap it did not already cover. Name the
-two files `build.py` produced (the `.xlsx` workbook and the markdown file)
-and stop there. Do not restate the itinerary content back — you never read
-the shards, so you have nothing to restate that isn't already in the two
-files you just named.
+summary gap it did not already cover.
+
+**If she asked for Excel**, name the `.xlsx` file `build.py` produced and
+stop there.
+
+**If she asked for a Claude artifact**, read the `.html` file `build.py`
+produced and publish it with the `Artifact` tool, using the trip name as
+the title (e.g. "Venice Florence Itinerary") and 🧳 as the favicon, then
+give her the link. The page is generated whole by the script — there is no
+design work to do and nothing to hand-write into it.
+
+Either way, do not restate the itinerary content back — you never read the
+shards, so you have nothing to restate that isn't already in the file or
+page you just delivered.
