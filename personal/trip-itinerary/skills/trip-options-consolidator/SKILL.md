@@ -4,8 +4,9 @@ description: Given an ordered list of cities, builds one combined itinerary
   covering all three activity levels (low, medium, high), each with all
   three travel budget options (cheapest, mid-range, luxury) shown for how
   to get to the next city, in the order the cities were given, with a link
-  on every activity and every travel option — as a spreadsheet if she wants
-  one, or in the conversation if she doesn't. Also offers to add a travel
+  on every activity and every travel option — always as a spreadsheet,
+  either an Excel workbook or a Claude artifact, whichever she picks. Also
+  offers to add a travel
   leg before city 1 or after the last city if she names a beginning or
   ending city. Runs cities-itinerary three
   times and transportation-researcher three times per leg, and merges what
@@ -14,7 +15,7 @@ description: Given an ordered list of cities, builds one combined itinerary
   Do NOT use it when she only wants activities (cities-itinerary alone),
   only wants routes between two places (transportation-researcher alone),
   or only wants one activity level instead of all three.
-allowed-tools: Task, Bash, Write, Read, AskUserQuestion
+allowed-tools: Task, Bash, Write, Read, AskUserQuestion, Artifact
 model: opus
 ---
 
@@ -38,12 +39,19 @@ season, an interest, travel dates), ask for it up front if missing, since
 transportation-researcher needs dates to search — and carry that constraint
 into every spawn below, not just the first.
 
-Also ask her, up front, whether she wants this as a spreadsheet or just
-the answer in the conversation. Ask it alongside whatever else you're
-asking for (dates, constraints) so it's one round of questions, not two.
-Her answer decides which of the two "Delivering the result" paths below
-you follow once the merge is done — don't build a spreadsheet she didn't
-ask for, and don't withhold one she did.
+The deliverable is always a spreadsheet. Ask her, up front, which of the
+two she wants it as:
+
+- an **Excel file** she opens on her machine, or
+- a **Claude artifact** she opens in the browser and can share by link.
+
+Ask it alongside whatever else you're asking for (dates, constraints) so
+it's one round of questions, not two. It is the same spreadsheet either
+way — same six columns, same three tabs, same section headers, same
+colors — built from the same merged data by the same script, so the choice
+is only about where she wants to read it. Never offer a third option of
+writing the itinerary out in the conversation instead; she gets a
+spreadsheet.
 
 In that same round of questions, ask whether there's a beginning city she's
 traveling from before city 1, or an ending city she's traveling to after
@@ -84,6 +92,23 @@ budget: cheapest
 
 Repeat with `budget: mid-range` and `budget: luxury` for that same leg, then
 do all three again for city 2 → city 3, city 3 → city 4, and so on.
+
+**Every luxury spawn carries the ceiling.** Write it into the prompt, on
+its own line, exactly:
+
+```
+budget: luxury
+ceiling: $10,000 — never report an option above this, whatever she has said her budget is
+```
+
+$10,000 is the cap on luxury travel for this trip, per leg. It is the same
+ceiling transportation-researcher already applies, said again here so the
+subagent has it in front of it — a subagent inherits nothing from this
+conversation. If a luxury leg comes back with an option above $10,000,
+that leg is a mis-spawn: drop the option and re-spawn that leg rather than
+carrying it into the sheet. Nothing over the ceiling reaches her, and it
+is never raised to fill out a leg — a leg with two luxury options, or
+none, is the honest answer.
 
 **If she gave a beginning city**, add three more transportation-researcher
 spawns, same as any other leg, for beginning city → city 1:
@@ -153,36 +178,81 @@ purchase link for every travel segment. Carry both through untouched — an
 activity or a segment with no link is a gap to flag, not something to drop
 silently.
 
+**One travel service per row.** A budget tier often comes back with more
+than one way of making the journey — a train and a bus that are both the
+cheapest sort of option, two airlines that are both mid-range. Never pack
+those into a single Details cell. Give each one its own entry, and name it
+in `item` by the service actually being taken — the airline and flight
+number, the specific train, the specific bus line — not a summary like
+"train or bus". Every one of those entries keeps the tier it belongs to,
+so three cheapest options are three rows all reading `Cheapest`, each with
+its own details and its own booking link.
+
+**Cost and transfers sit with the tier, not in the prose.** Every travel
+entry carries two more fields alongside `tier`, and they go in the budget
+column with it rather than being left to Details:
+
+- `cost` — what that option costs in total, as one figure with its
+  currency, e.g. `$245` or `EUR18.90`.
+- `connections` — `Nonstop`, or `1 transfer`, `2 transfers`, counting
+  every change of vehicle across the whole journey.
+
+transportation-researcher reports both for every option it finds; carry
+them across rather than working them out yourself, and if one is genuinely
+missing for an option, leave the field out rather than guessing. Details
+then covers what the other two don't — comfort, timings, frequency, what
+makes this option worth considering — instead of repeating the price back.
+
+To do that, put a list under `options` on the tier, as
+`templates/trip_data.example.json` shows for one leg. The build script
+turns each element into its own row.
+
 Assemble all of this into one JSON file matching the shape in
 `templates/trip_data.example.json` — `sequence` from above, `travel_legs`
 keyed by the same labels used in `sequence`, and `activities` with one
 entry per tab, each keyed by city name. That JSON file is what the next
-step runs on, whether or not she asked for a spreadsheet.
+step runs on, in either format.
 
 ## Delivering the result
 
-**If she asked for a spreadsheet:** run
+Both formats come out of the same script, run from inside this skill's
+folder. It writes the file next to the JSON file, one tab per activity
+level, fully formatted — column widths, section-header rows, alternating
+stripes, borders, all of it. You don't need to reproduce any of that
+formatting by hand; the script is the single source of truth for it, and
+it is what keeps the two formats identical. If she asks why the sheet
+looks the way it does, or you're changing the format itself, see
+`references/spreadsheet-format.md`.
+
+**If she asked for an Excel file:** run
 
 ```
 python3 scripts/build_itinerary.py <path to the merged JSON>
 ```
 
-from inside this skill's folder. It writes the workbook next to the JSON
-file, one sheet per activity level, fully formatted — column widths,
-section-header rows, alternating stripes, borders, all of it. You don't
-need to reproduce any of that formatting by hand; the script is the single
-source of truth for it. If she asks why the sheet looks the way it does,
-or you're changing the format itself, see
-`references/spreadsheet-format.md`.
+**If she asked for a Claude artifact:** run
 
-Tell her in plain English, once the file is saved: where it is, that it has
-three tabs, and to open it and give it a look — don't repeat the whole
-itinerary back to her in the conversation, the spreadsheet is the
-deliverable.
+```
+python3 scripts/build_itinerary.py <path to the merged JSON> --format artifact
+```
 
-**If she did not ask for a spreadsheet:** give her the three itineraries
-directly in the conversation, in plain English, activity level by activity
-level — low, then medium, then high — each covering city by city and leg
-by leg with all three travel options. Nothing gets written to a file in
-this case; the conversation is the deliverable, and the merged JSON is
-just working memory you don't need to keep.
+which writes a finished, self-contained web page — the same sheet, with
+the three activity levels as tabs across the top. Publish that file with
+the Artifact tool, using the trip name as the title (e.g. "Venice Florence
+Itinerary") and 🧳 as the favicon, and give her the link. The page is
+generated whole by the script, so there is no design work to do and
+nothing to hand-write into it.
+
+**Then, before you tell her it's done**, open what you built and read down
+the travel rows. Each one must be a single service, named in the Item
+column, with its tier, its cost and its transfers in the budget column. If
+any Details cell has ended up holding two journeys, that's a merge that
+packed them together: split them into separate entries in the JSON, one
+per service, each keeping the same tier, and run the script again. Check
+too that no luxury row is above $10,000 — if one is, it should not have
+come back at all, so drop it and re-spawn that leg.
+
+Tell her in plain English, once it's built: where the file is or what the
+link is, that it has three tabs, and to open it and give it a look — don't
+repeat the whole itinerary back to her in the conversation, the
+spreadsheet is the deliverable.

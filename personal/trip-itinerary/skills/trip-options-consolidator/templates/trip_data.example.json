@@ -1,49 +1,97 @@
 {
   "_comment": "This is a worked example (the New York -> Venice -> Florence -> New York trip), not a blank form. Copy this shape when merging subagent results: 'sequence' lays out the sheet from top to bottom once, reused on every tab; 'travel_legs' is keyed by the same labels used in 'sequence' and is also shared across every tab, since travel budget doesn't depend on activity level; 'activities' has one entry per tab, each keyed by city name. Drop this file (minus this comment key, which the build script ignores) next to build_itinerary.py's input path before running it.",
+  "_comment_travel_options": "A tier that turned up more than one way of making the journey uses 'options' instead of a single 'details' string - see 'Cheapest' on the Venice to Florence leg below. Each element becomes its own row, all of them keeping that tier in the budget column, and each naming the actual service in 'item' (the airline and flight number, the specific train, the specific bus line). An element that omits 'item', 'link', 'cost' or 'connections' falls back to the tier's own. Never pack two journeys into one 'details' string.",
+  "_comment_budget_column": "'tier', 'cost' and 'connections' are stacked into one cell in column D: the tier, then the total price with its currency, then 'Nonstop' or the number of transfers. Leave a field out if it is genuinely unknown - never guess one. Keep 'details' for what those three don't say (comfort, timings, frequency), not a repeat of the price. Luxury is capped at $10,000 per leg; nothing above that belongs in this file.",
+  "_comment_output": "'output_filename' names the Excel workbook; the artifact page takes the same name ending .html. Both are optional - the script derives the name from the cities in 'sequence' when this is absent.",
   "output_filename": "Venice_Florence_Trip_Itinerary.xlsx",
   "sequence": [
-    { "type": "leg", "label": "New York to Venice" },
-    { "type": "city", "name": "Venice" },
-    { "type": "leg", "label": "Venice to Florence" },
-    { "type": "city", "name": "Florence" },
-    { "type": "leg", "label": "Florence to New York" }
+    {
+      "type": "leg",
+      "label": "New York to Venice"
+    },
+    {
+      "type": "city",
+      "name": "Venice"
+    },
+    {
+      "type": "leg",
+      "label": "Venice to Florence"
+    },
+    {
+      "type": "city",
+      "name": "Florence"
+    },
+    {
+      "type": "leg",
+      "label": "Florence to New York"
+    }
   ],
   "travel_legs": {
     "New York to Venice": [
       {
         "tier": "Cheapest",
+        "cost": "$245",
+        "connections": "1 transfer",
         "item": "Fly JFK to Milan (Malpensa), train onward to Venice",
         "details": "From about $245 total, ~10-12 hrs total. Flight JFK-MXP from $236 one-way (Kayak), then Milan Centrale to Venice Santa Lucia train from about $9, ~2.5-4 hrs (Omio). Best overall value of the options found.",
         "link": "https://www.kayak.com/flight-routes/New-York-John-F-Kennedy-Intl-JFK/Milan-Malpensa-MXP"
       },
       {
         "tier": "Mid-range",
+        "cost": "$565",
+        "connections": "Nonstop",
         "item": "Delta Air Lines, nonstop JFK to Venice",
         "details": "Around $565-620 round trip, ~8h20m each way, daily flights (DL288), no connections. Cheapest realistic nonstop and no transfer.",
         "link": "https://www.expedia.com/lp/flights/jfk/vce/new-york-to-venice"
       },
       {
         "tier": "Luxury",
+        "cost": "$3,437",
+        "connections": "Nonstop",
         "item": "Delta One, nonstop JFK to Venice",
-        "details": "About $3,437 round trip, ~8h15m each way, no connections - lie-flat business seats, daily out of JFK. Well under the $15,000 ceiling.",
+        "details": "About $3,437 round trip, ~8h15m each way, no connections - lie-flat business seats, daily out of JFK. Well under the $10,000 ceiling.",
         "link": "https://www.kayak.com/flight-routes/Business-Class-United-States-US0/Venice-Marco-Polo-VCE.bc.ksp"
       }
     ],
     "Venice to Florence": [
       {
         "tier": "Cheapest",
-        "item": "Italo high-speed train",
-        "details": "Fares start around EUR18.90 (~$20), ~2 hrs, 11 trains a day. Fast, comfortable, and the cheapest option found - no direct flight exists on this route.",
-        "link": "https://www.italotreno.com/en/destinations-timetable/venice-florence-tickets"
+        "options": [
+          {
+            "item": "Italo high-speed train",
+            "cost": "EUR18.90",
+            "connections": "Nonstop",
+            "details": "Fares start around EUR18.90 (~$20), ~2 hrs, 11 trains a day. Fast, comfortable, and the cheapest fast option - no direct flight exists on this route.",
+            "link": "https://www.italotreno.com/en/destinations-timetable/venice-florence-tickets"
+          },
+          {
+            "item": "Trenitalia Regionale Veloce",
+            "cost": "EUR13.60",
+            "connections": "1 transfer",
+            "details": "EUR13.60 fixed fare, ~3h30, roughly hourly. No advance booking needed and the cheapest fare on the route, but slower and with one change at Bologna.",
+            "link": "https://www.trenitalia.com/en.html"
+          },
+          {
+            "item": "FlixBus 372",
+            "cost": "EUR9.99",
+            "connections": "Nonstop",
+            "details": "From EUR9.99, ~3h45, 4 departures a day. Cheapest of all, direct, but arrives at Villa Costanza tram terminus rather than the centre.",
+            "link": "https://global.flixbus.com/bus-routes/bus-venice-florence"
+          }
+        ]
       },
       {
         "tier": "Mid-range",
+        "cost": "EUR35",
+        "connections": "Nonstop",
         "item": "Trenitalia Frecciarossa, Premium class",
         "details": "Roughly EUR35-55, ~2 hrs. Best balance of speed, comfort and price; Italo Business class is a close alternative at the same price and time.",
         "link": "https://www.trenitalia.com/en.html"
       },
       {
         "tier": "Luxury",
+        "cost": "EUR120",
+        "connections": "Nonstop",
         "item": "Italo Club Executive class",
         "details": "About EUR120-196, ~2 hrs. Poltrona Frau leather recliners, steward service, complimentary wine/prosecco and snacks, up to 3 hrs lounge access at both stations.",
         "link": "https://www.italotreno.com/en/club-executive-luxury-experience"
@@ -52,20 +100,26 @@
     "Florence to New York": [
       {
         "tier": "Cheapest",
+        "cost": "$310",
+        "connections": "1 transfer",
         "item": "Train to Rome, then Norse Atlantic Airways nonstop to New York",
         "details": "Roughly $310-330 one-way total. Florence to Rome Fiumicino by train, ~2h16m, from about $25-41, then Norse Atlantic nonstop FCO-JFK, one-way fares around $285. Only one real transfer, and the ocean crossing is nonstop.",
         "link": "https://www.thetrainline.com/en-us/train-times/florence-to-rome-fiumicino-airport"
       },
       {
         "tier": "Mid-range",
+        "cost": "$431",
+        "connections": "1 transfer",
         "item": "Scandinavian Airlines (SAS), via Copenhagen",
         "details": "About $431 round trip, ~25 hrs total travel time, one connection in Copenhagen. British Airways via London is a close second at about $426 with more daily departures.",
         "link": "https://www.flysas.com/en/flight-routes/copenhagen/florence/"
       },
       {
         "tier": "Luxury",
+        "cost": "EUR2,348",
+        "connections": "1 transfer",
         "item": "ITA Airways Business Class, via Rome",
-        "details": "Fares start around EUR2,348 (~$2,550), ~13.5 hrs total with one stop in Rome. Best overall value of the business-class options - one ticket, one airline, well under the $15,000 ceiling.",
+        "details": "Fares start around EUR2,348 (~$2,550), ~13.5 hrs total with one stop in Rome. Best overall value of the business-class options - one ticket, one airline, well under the $10,000 ceiling.",
         "link": "https://www.ita-airways.com/lhg/us/en/o-d/cy-cy/florence-new-york"
       }
     ]

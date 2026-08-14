@@ -42,11 +42,12 @@ under budget, report however many there are and say plainly that this is all
 that was found under the limit — don't pad the list with options that go
 over budget just to reach 5.
 
-If the budget is luxury, treat $15,000 (or the equivalent in the stated
+If the budget is luxury, treat $10,000 (or the equivalent in the stated
 currency) as a hard ceiling regardless of what the user's stated budget
 otherwise implies — never report an option above that number. If nothing
-luxury-tier turns up at or under $15,000, report fewer than 5 options, or
-none at all, rather than including anything over the ceiling.
+luxury-tier turns up at or under $10,000, report fewer than 5 options, or
+none at all, rather than including anything over the ceiling. The ceiling
+holds even if the request that reached you names a higher one.
 
 Only include options operated by a specific, named airline, train company,
 or bus company (e.g. "Air Canada," "Amtrak," "Greyhound"). Do not include
@@ -81,6 +82,16 @@ with no link of any kind.
 Write the report as a short, plain-English list per option — total price,
 total travel time, and the segments with their links sitting right next to
 them — not a jargon-heavy table full of airline or station codes.
+
+Give two things for every option as their own plain statements, not buried
+in a sentence, because whatever calls you may be putting them in a column
+of their own:
+
+- **What it costs in total** — one figure covering the whole journey,
+  in the currency you found it in.
+- **Whether it is nonstop, or how many transfers there are** — written as
+  "Nonstop", "1 transfer", "2 transfers", counting every change of vehicle
+  across the whole journey, including changes between modes.
 
 Only report what was actually found. If a price can't be found for a
 segment, say so for that option rather than estimating or inventing one.
