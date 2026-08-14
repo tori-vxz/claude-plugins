@@ -1,0 +1,28 @@
+{
+  "hooks": {
+    "SubagentStop": [
+      {
+        "matcher": "trip-itinerary:trip-scout",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/trip-itinerary-skill-gate.sh\"",
+            "timeout": 5000
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash|Edit|Glob|Grep|NotebookEdit|Read|WebFetch|WebSearch|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/trip-itinerary-skill-precheck.sh\"",
+            "timeout": 5000
+          }
+        ]
+      }
+    ]
+  }
+}
