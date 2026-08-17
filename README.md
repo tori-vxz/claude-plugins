@@ -12,8 +12,6 @@ Each plugin is self-contained and separately installable. See `.claude-plugin/ma
   - **[`web-research/`](personal/web-research/)** — a multi-angle web research chain: web-crawler names every plausible category of explanation for a question and re-searches each until results stabilize, web-consolidator merges multiple crawler reports into one, and web writes the final answer, resolving conflicts by source authority and keeping a URL attached to every fact.
   - **[`trip-itinerary/`](personal/trip-itinerary/)** — researches things to do in a city, transportation between cities, and builds a full multi-city itinerary as a spreadsheet and a markdown file.
 
-(The Joint Case Management Statement drafter, nd-cal-cmc-stmt-builder, lives in its own repo: [litigation-skills-projects](https://github.com/tori-vxz/litigation-skills-projects).)
-
 ## Installing
 
 ```
